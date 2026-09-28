@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bhutan Family Trip Tracker</title>
+    <stylesheet src="styles.css">
+</head>
+<body>
+
+    <div class="container">
+
+        <header>
+            <h1>🇧🇹 Bhutan Family Trip Tracker</h1>
+            <p>6-Day Family Adventure</p>
+
+            <div class="progress-card">
+                <span>Progress</span>
+                <div class="progress-bar">
+                    <div id="progress-fill"></div>
+                </div>
+                <span id="progress-text">0%</span>
+            </div>
+        </header>
+
+        <details open>
+            <summary>📄 Travel Documents</summary>
+            <ul>
+                <li><input type="checkbox"> Passports (All Family Members)</li>
+                <li><input type="checkbox"> Entry Permit / Visa</li>
+                <li><input type="checkbox"> Flight Tickets</li>
+                <li><input type="checkbox"> Travel Insurance</li>
+                <li><input type="checkbox"> Hotel Confirmations</li>
+                <li><input type="checkbox"> Emergency Contacts</li>
+                <li><input type="checkbox"> Backup Copies in Cloud</li>
+            </ul>
+        </details>
+
+        <details open>
+            <summary>✈️ Day 1: Arrival in Paro</summary>
+            <ul>
+                <li><input type="checkbox"> Family photo at Paro Airport</li>
+                <li><input type="checkbox"> Aircraft mountain approach</li>
+                <li><input type="checkbox"> Welcome signboard</li>
+                <li><input type="checkbox"> First Bhutanese meal</li>
+                <li><input type="checkbox"> Hotel family photo</li>
+            </ul>
+        </details>
+
+        <details>
+            <summary>🏔️ Day 2: Paro</summary>
+            <ul>
+                <li><input type="checkbox"> Tiger's Nest viewpoint</li>
+                <li><input type="checkbox"> Family hiking photo</li>
+                <li><input type="checkbox"> Prayer flags</li>
+                <li><input type="checkbox"> Traditional architecture</li>
+                <li><input type="checkbox"> Valley views</li>
+            </ul>
+        </details>
+
+        <details>
+            <summary>🏙️ Day 3: Thimphu</summary>
+            <ul>
+                <li><input type="checkbox"> Buddha Dordenma</li>
+                <li><input type="checkbox"> Memorial Chorten</li>
+                <li><input type="checkbox"> Clock Tower Square</li>
+                <li><input type="checkbox"> Family street photo</li>
+                <li><input type="checkbox"> Local handicrafts</li>
+            </ul>
+        </details>
+
+        <details>
+            <summary>🌄 Day 4: Punakha Journey</summary>
+            <ul>
+                <li><input type="checkbox"> Dochula Pass</li>
+                <li><input type="checkbox"> 108 Chortens</li>
+                <li><input type="checkbox"> Himalayan panorama</li>
+                <li><input type="checkbox"> Suspension Bridge</li>
+                <li><input type="checkbox"> Punakha Dzong</li>
+            </ul>
+        </details>
+
+        <details>
+            <summary>🌾 Day 5: Punakha</summary>
+            <ul>
+                <li><input type="checkbox"> Riverside scenery</li>
+                <li><input type="checkbox"> Rice terraces</li>
+                <li><input type="checkbox"> Mountain portrait</li>
+                <li><input type="checkbox"> Village life</li>
+                <li><input type="checkbox"> Sunset photo</li>
+            </ul>
+        </details>
+
+        <details>
+            <summary>🛫 Day 6: Return to Paro</summary>
+            <ul>
+                <li><input type="checkbox"> Traditional dress photo</li>
+                <li><input type="checkbox"> Souvenirs photo</li>
+                <li><input type="checkbox"> Airport farewell photo</li>
+                <li><input type="checkbox"> Final family selfie</li>
+            </ul>
+        </details>
+
+        <details>
+            <summary>📸 Must-Have Shots</summary>
+            <ul>
+                <li><input type="checkbox"> Tiger's Nest Family Photo</li>
+                <li><input type="checkbox"> Dochula Pass Family Photo</li>
+                <li><input type="checkbox"> Punakha Dzong Family Photo</li>
+                <li><input type="checkbox"> One Meal Photo Daily</li>
+                <li><input type="checkbox"> One Sunrise/Sunset Daily</li>
+                <li><input type="checkbox"> Selfie at Every Location</li>
+            </ul>
+        </details>
+
+    </div>
+
+<script>
+const checkboxes = document.querySelectorAll("input[type='checkbox']");
+
+checkboxes.forEach((box, index) => {
+    const saved = localStorage.getItem("bhutan_" + index);
+
+    if (saved === "true") {
+        box.checked = true;
+    }
+
+    box.addEventListener("change", () => {
+        localStorage.setItem("bhutan_" + index, box.checked);
+        updateProgress();
+    });
+});
+
+function updateProgress() {
+    const total = checkboxes.length;
+    const completed = document.querySelectorAll("input[type='checkbox'\]:checked").length;
+    const percent = Math.round((completed / total) * 100);
+
+    document.getElementById("progress-fill").style.width = percent + "%";
+    document.getElementById("progress-text").innerText = percent + "%";
+}
+
+updateProgress();
+</script>
+
+</body>
+</html>
