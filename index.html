@@ -1,0 +1,243 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Bhutan Trip Tracker</title>
+<style>
+:root{--bg:#eef1f2;--card:#fff;--ink:#1c2a31;--mute:#5d6d75;--line:#d8dfe2;--maroon:#8a1f2b;--saffron:#e0a21b;--ok:#2f7d4f;--warn:#b3261e}
+*{box-sizing:border-box}
+html,body{margin:0}
+body{background:var(--bg);color:var(--ink);font:16px/1.4 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;padding-bottom:calc(76px + env(safe-area-inset-bottom,0px));-webkit-text-size-adjust:100%}
+header{background:var(--maroon);color:#fff;padding:calc(18px + env(safe-area-inset-top,0px)) 16px 16px}
+h1{font:700 1.35rem/1.2 Georgia,"Iowan Old Style",serif;margin:0}
+header p{margin:2px 0 12px;opacity:.85;font-size:.9rem}
+.bar{height:10px;background:rgba(255,255,255,.25);border-radius:6px;overflow:hidden}
+.bar i{display:block;height:100%;width:0;background:var(--saffron);transition:width .25s}
+#ptext{margin-top:6px;font-size:.85rem}
+main{padding:12px;max-width:640px;margin:0 auto}
+.tab{display:none}.tab.on{display:block}
+details{background:var(--card);border:1px solid var(--line);border-radius:12px;margin-bottom:10px;overflow:hidden}
+summary{list-style:none;cursor:pointer;padding:14px;font-weight:600;display:flex;justify-content:space-between;gap:8px;align-items:center;min-height:52px}
+summary::-webkit-details-marker{display:none}
+summary::after{content:"▾";color:var(--mute);transition:transform .2s}
+details[open]>summary::after{transform:rotate(180deg)}
+.cnt{margin-left:auto;font-weight:500;font-size:.8rem;color:var(--mute);background:var(--bg);border-radius:10px;padding:2px 8px}
+ul{list-style:none;margin:0;padding:0 14px 8px}
+li{border-top:1px solid var(--line);padding:4px 0}
+label{display:flex;gap:12px;align-items:center;min-height:48px;cursor:pointer}
+input[type=checkbox]{width:24px;height:24px;flex:none;accent-color:var(--maroon)}
+li.done label span.t{text-decoration:line-through;color:var(--mute)}
+small{display:block;margin:-6px 0 6px 36px;color:var(--mute);font-size:.8rem}
+.tools{margin:0 0 8px 36px;display:flex;flex-direction:column;gap:8px}
+.tools textarea{width:100%;font:inherit;font-size:.9rem;border:1px solid var(--line);border-radius:8px;padding:8px;min-height:44px}
+.tools input[type=file]{font-size:.85rem;max-width:100%}
+.tools img{max-width:100%;border-radius:8px}
+.map{text-decoration:none;font-size:1.1rem;padding:8px}
+.goals{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:14px;margin-bottom:10px}
+.goals h2{font:700 1.05rem Georgia,serif;margin:0 0 10px}
+.g{margin-bottom:12px}
+.g .row{display:flex;justify-content:space-between;font-size:.9rem;margin-bottom:4px}
+.g .bar{background:var(--line)}
+.g .bar i{background:var(--ok)}.g.over .bar i{background:var(--warn)}.g.over .row b{color:var(--warn)}
+.mealh{font-weight:700;font-size:.8rem;color:var(--maroon);padding:12px 0 2px;border-top:1px solid var(--line)}
+.chips{display:flex;flex-wrap:wrap;gap:8px;padding:0 14px 14px}
+.chips span{background:#fbeceb;color:var(--warn);border-radius:16px;padding:6px 12px;font-size:.9rem}
+nav{position:fixed;left:0;right:0;bottom:0;display:flex;background:#fff;border-top:1px solid var(--line);padding-bottom:env(safe-area-inset-bottom,0px)}
+nav button{flex:1;border:0;background:none;font:600 .9rem system-ui;padding:14px 4px;min-height:56px;color:var(--mute)}
+nav button.on{color:var(--maroon);box-shadow:inset 0 3px var(--maroon)}
+:root:not([data-theme=light]){color-scheme:light}
+</style>
+</head>
+<body>
+<header>
+  <h1>🇧🇹 Bhutan Trip Tracker</h1>
+  <p>5–10 Oct 2026 · 4 adults · Paro, Thimphu, Punakha</p>
+  <div class="bar"><i id="pfill"></i></div>
+  <div id="ptext"></div>
+</header>
+<main>
+  <section id="tab-photo" class="tab on"></section>
+  <section id="tab-meal" class="tab"></section>
+</main>
+<nav>
+  <button data-tab="photo" class="on">📸 Photo checklist</button>
+  <button data-tab="meal">🍽️ Meal plan</button>
+</nav>
+
+<script>
+const PHOTO=[
+ {id:'docs',t:'📄 Before you fly',open:1,items:[
+  ['Valid passport or Voter ID (all 4)','Required for Indian nationals'],
+  ['Travel insurance','Mandatory for the Bhutan permit; not in the package'],
+  ['Flight tickets','Out: 5 Oct Delhi 13:30 → Paro 15:50 · Back: 10 Oct Paro 10:20 → Delhi 12:00 (Bhutan Airlines)'],
+  ['Indian Holiday confirmation & hotel vouchers','Thimphu 2 nights, Punakha 1, Paro 2'],
+  ['Cash (max ₹25,000 per person)','Cards are rarely accepted and carry a 6–7% surcharge'],
+  ['Extra cash for entrance fees, lunches, tips','All excluded from the package'],
+  ['Phone data cable','Needed for personalised stamps at the Thimphu post office'],
+  'Emergency contacts','Backup copies of documents in cloud']},
+ {id:'d1',t:'✈️ Day 1 · Mon 5 Oct',date:'2026-10-05',sub:'Delhi → Paro → Thimphu · overnight Thimphu',items:[
+  'Group photo at Delhi airport',
+  'Himalayan range from the plane window',
+  'Paro Airport arrival',
+  ['Meet your representative at the exit gate','Drive to Thimphu'],
+  ['Thimphu Craft Bazaar walk','A few minutes from downtown hotels'],
+  'Hotel photo in Thimphu']},
+ {id:'d2',t:'🏙️ Day 2 · Tue 6 Oct',date:'2026-10-06',sub:'Thimphu sightseeing · overnight Thimphu',items:[
+  ['Motithang Takin Preserve','Bhutan\'s national animal'],
+  ['BBS Tower (Sangaygang viewpoint)','2,865 m · view over all of Thimphu'],
+  ['Simply Bhutan Museum','9:00–17:00'],
+  ['Memorial Chorten','9:00–17:00 (summer), until 16:00 (winter)'],
+  ['Buddha Point (Kuensel Phodrang)','Largest Buddha statue in the country'],
+  ['Changangkha Lhakhang','One of the oldest monasteries in the valley'],
+  ['Trashichhoedzong','Weekdays: opens after 17:30 (summer) / 16:30 (winter)']]},
+ {id:'d3',t:'🌄 Day 3 · Wed 7 Oct',date:'2026-10-07',sub:'Thimphu → Punakha · 75 km, ~3 hrs · overnight Punakha',items:[
+  ['Dochula Pass (3,080 m)','Chortens, prayer flags, eastern Himalaya peaks on a clear day'],
+  ['Punakha Dzong','Open 11:00–13:00 and 15:00–17:00'],
+  ['Punakha Suspension Bridge','Longest in Bhutan, 180 m'],
+  ['Chimi Lakhang','Open 9:00–12:00 and 13:00–16:00'],
+  ['Rice-field walk through Pana village','About 1.5 hrs round trip']]},
+ {id:'d4',t:'🛣️ Day 4 · Thu 8 Oct',date:'2026-10-08',sub:'Punakha → Paro · 125 km, ~4 hrs · overnight Paro',items:[
+  'Wang Chhu and Paro Chhu valley drive',
+  ['Simtokha Dzong','En route · 9:00–17:00 summer, until 16:00 winter'],
+  ['Ta Dzong (National Museum)','9:00–17:00'],
+  ['Rinpung Dzong','Short walk down from Ta Dzong · closed weekends'],
+  'Paro hotel photo']},
+ {id:'d5',t:'🏔️ Day 5 · Fri 9 Oct',date:'2026-10-09',sub:'Paro · Tiger\'s Nest hike · overnight Paro',items:[
+  ['Tiger\'s Nest (Taktshang) viewpoint','~5 hr hike · 900 m above the valley · 9:00–17:00'],
+  ['Group photo at Tiger\'s Nest','Pony only goes from base to cafeteria, not down'],
+  ['Kyichu Lhakhang','7th-century temple, on the way back'],
+  'Paro main street and market walk',
+  'Sunset in Paro valley']},
+ {id:'d6',t:'🛫 Day 6 · Sat 10 Oct',date:'2026-10-10',sub:'Depart Paro · flight 10:20',items:[
+  ['Early or packed breakfast','Drive to the airport'],
+  'Souvenirs photo',
+  'Farewell photo with your guide',
+  'Final group selfie at Paro Airport']},
+ {id:'opt',t:'✨ Optional add-ons',sub:'Extra cost, book through Indian Holiday',items:[
+  ['Try on Gho and Kira','₹750 per person'],
+  ['Archery at Paro Archery Ground','₹1,000 per person'],
+  ['Light 108 lamps at a temple','₹1,000 per person'],
+  ['Personalised stamps at Thimphu post office','About ₹1,000 per person'],
+  ['Visit Bhutan Animal Rescue and Care (BARC)','Free; a donation is expected'],
+  ['Farm house visit in Paro','₹500 · hot stone bath ₹2,000–2,500'],
+  ['Khuru (dart game) in Paro','₹1,000 per person for half an hour'],
+  ['River rafting in Punakha','₹10,000 per raft, up to 6 people']]},
+ {id:'must',t:'📸 Must-have shots',items:[
+  'Tiger\'s Nest group photo','Dochula Pass group photo','Punakha Dzong group photo',
+  'One meal photo daily','One sunrise or sunset daily','Selfie at every location']}
+];
+const MEALS=[
+ ['Breakfast (hotel)',[
+  {n:'1 scoop whey protein',k:120,p:24,note:'Brand / flavor used'},
+  {n:'Vegetable omelette (4 eggs)',k:320,p:24},
+  {n:'Oats (40g)',k:150,p:5,f:4},
+  {n:'Apple',k:95,f:4}]],
+ ['Morning snack',[
+  {n:'Greek yogurt / dahi',k:150,p:15},
+  {n:'Roasted chana (50g)',k:180,p:10,f:8}]],
+ ['Lunch (on your own)',[
+  {n:'Chicken momos (10 pcs)',k:450,p:35,map:'Chicken momos Bhutan',photo:1},
+  {n:'Vegetable soup',k:50,p:2},
+  {n:'Side salad',k:30,f:2}]],
+ ['Afternoon',[
+  {n:'Second scoop whey',k:120,p:24},
+  {n:'Orange or pear',k:80,f:4}]],
+ ['Dinner (hotel)',[
+  {n:'Grilled chicken (200g)',k:330,p:60,photo:1},
+  {n:'Stir-fried vegetables',k:100,f:5}]]
+];
+const HUNT=['Chicken momos','Jasha maru','Bhutanese mushroom dish','Fresh yak yogurt','Local apple','Pear','Vegetable soup','Boiled eggs','Grilled chicken','Roasted chana snack'];
+const LIMIT=['Ema datshi (watch portions)','Kewa datshi','Shamu datshi','Butter tea','Fried momos','Fried noodles','Sugary drinks','Bakery desserts'];
+const GOALS={k:1900,p:150,f:25};
+
+const today=new Date().toLocaleDateString('en-CA');
+const get=(k,d)=>{try{const v=localStorage.getItem(k);return v===null?d:JSON.parse(v)}catch(e){return d}};
+const set=(k,v)=>{try{localStorage.setItem(k,JSON.stringify(v))}catch(e){}};
+const TRIP='bhutan3:trip', DAY='bhutan3:day:'+today;
+let trip=get(TRIP,{}), day=get(DAY,{});
+const save=()=>{set(TRIP,trip);set(DAY,day)};
+
+// ---------- Photo checklist ----------
+function renderPhoto(){
+  document.getElementById('tab-photo').innerHTML=PHOTO.map(g=>`
+  <details ${(g.open||g.date===today)?'open':''}><summary><span>${g.t}${g.date===today?' <small style="display:inline;margin:0;color:var(--maroon)">· today</small>':''}${g.sub?`<small style="margin:2px 0 0">${g.sub}</small>`:''}</span><span class="cnt" data-cnt="${g.id}"></span></summary><ul>
+  ${g.items.map((x,i)=>{const id=g.id+i,lab=Array.isArray(x)?x[0]:x,hint=Array.isArray(x)?x[1]:'';return `<li><label><input type="checkbox" data-s="trip" data-id="${id}" ${trip[id]?'checked':''}><span class="t">${lab}</span></label>${hint?`<small>${hint}</small>`:''}</li>`}).join('')}
+  </ul></details>`).join('');
+}
+
+// ---------- Meal plan ----------
+let mi=0;
+function renderMeal(){
+  const meals=MEALS.map(([name,items])=>`<div class="mealh">${name}</div>`+items.map(it=>{
+    const id='m'+(mi++);it.id=id;
+    const macro=[it.k+' kcal',it.p?it.p+'g protein':'',it.f?it.f+'g fiber':''].filter(Boolean).join(' · ');
+    return `<li><label><input type="checkbox" data-s="day" data-id="${id}" ${day[id]?'checked':''}><span class="t">${it.n}</span>${it.map?`<a class="map" target="_blank" rel="noopener" href="https://maps.google.com/?q=${encodeURIComponent(it.map)}" onclick="event.stopPropagation()">📍</a>`:''}</label>
+    <small>${macro}</small>
+    ${(it.note||it.photo)?`<div class="tools">
+      ${it.note?`<textarea data-note="${id}" placeholder="${it.note}">${day['n'+id]||''}</textarea>`:''}
+      ${it.photo?`<input type="file" accept="image/*" capture="environment" data-photo="${id}"><img id="img-${id}" alt="" ${day['p'+id]?`src="${day['p'+id]}"`:'hidden'}>`:''}
+    </div>`:''}</li>`}).join('')).join('');
+  document.getElementById('tab-meal').innerHTML=`
+  <div class="goals" style="font-size:.9rem;color:var(--mute)">Your package includes breakfast and dinner at the hotel. Lunches are on you, so plan those around each day's sightseeing.</div>
+  <div class="goals"><h2>🎯 Daily targets</h2>
+    <div class="g" id="g-k"></div><div class="g" id="g-p"></div><div class="g" id="g-f"></div>
+    <ul style="padding:0">
+      <li><label><input type="checkbox" data-s="day" data-id="water" ${day.water?'checked':''}><span class="t">Water ≥ 3 litres</span></label></li>
+      <li><label><input type="checkbox" data-s="day" data-id="steps" ${day.steps?'checked':''}><span class="t">10,000+ steps</span></label></li>
+    </ul></div>
+  <details open><summary>🍽️ High-protein food tracker<span class="cnt" data-cnt="meals"></span></summary><ul>${meals}</ul></details>
+  <details><summary>🇧🇹 Bhutan food hunt<span class="cnt" data-cnt="hunt"></span></summary><ul>
+    ${HUNT.map((x,i)=>`<li><label><input type="checkbox" data-s="trip" data-id="h${i}" ${trip['h'+i]?'checked':''}><span class="t">${x}</span></label></li>`).join('')}</ul></details>
+  <details><summary>⚠️ Foods to limit</summary><div class="chips" style="padding-top:4px">${LIMIT.map(x=>`<span>${x}</span>`).join('')}</div></details>`;
+}
+
+function goalBar(id,label,val,goal,unit,max){
+  const pct=Math.min(100,val/goal*100), over=max&&val>goal;
+  const el=document.getElementById(id);
+  el.className='g'+(over?' over':'');
+  el.innerHTML=`<div class="row"><span>${label} ${max?'≤':'≥'} ${goal}${unit}</span><b>${val}${unit}</b></div><div class="bar"><i style="width:${pct}%"></i></div>`;
+}
+
+function update(){
+  // meal totals
+  const all=MEALS.flatMap(m=>m[1]);let k=0,p=0,f=0,mc=0;
+  all.forEach(it=>{if(day[it.id]){k+=it.k||0;p+=it.p||0;f+=it.f||0;mc++}});
+  goalBar('g-k','Calories',k,GOALS.k,' kcal',true);
+  goalBar('g-p','Protein',p,GOALS.p,'g');
+  goalBar('g-f','Fiber',f,GOALS.f,'g');
+  // counts
+  PHOTO.forEach(g=>{const n=g.items.filter((_,i)=>trip[g.id+i]).length;const c=document.querySelector(`[data-cnt="${g.id}"]`);if(c)c.textContent=n+'/'+g.items.length});
+  document.querySelector('[data-cnt="meals"]').textContent=mc+'/'+all.length;
+  document.querySelector('[data-cnt="hunt"]').textContent=HUNT.filter((_,i)=>trip['h'+i]).length+'/'+HUNT.length;
+  document.querySelectorAll('li').forEach(li=>{const c=li.querySelector('input[type=checkbox]');if(c)li.classList.toggle('done',c.checked)});
+  // header progress for active tab
+  const photoTotal=PHOTO.reduce((a,g)=>a+g.items.length,0), photoDone=PHOTO.reduce((a,g)=>a+g.items.filter((_,i)=>trip[g.id+i]).length,0);
+  const onMeal=document.getElementById('tab-meal').classList.contains('on');
+  const done=onMeal?mc:photoDone,total=onMeal?all.length:photoTotal,pct=Math.round(done/total*100);
+  document.getElementById('pfill').style.width=pct+'%';
+  document.getElementById('ptext').textContent=(onMeal?'Meals eaten today: ':'Photo checklist: ')+done+' of '+total+' ('+pct+'%)';
+}
+
+function shrink(file,cb){
+  const r=new FileReader();
+  r.onload=()=>{const im=new Image();im.onload=()=>{const s=Math.min(1,480/im.width),c=document.createElement('canvas');c.width=im.width*s;c.height=im.height*s;c.getContext('2d').drawImage(im,0,0,c.width,c.height);cb(c.toDataURL('image/jpeg',.6))};im.src=r.result};
+  r.readAsDataURL(file);
+}
+
+document.addEventListener('change',e=>{
+  const t=e.target;
+  if(t.dataset.s){(t.dataset.s==='trip'?trip:day)[t.dataset.id]=t.checked;save();update()}
+  if(t.dataset.photo){const id=t.dataset.photo;shrink(t.files[0],u=>{const img=document.getElementById('img-'+id);img.src=u;img.hidden=false;day['p'+id]=u;save()})}
+});
+document.addEventListener('input',e=>{if(e.target.dataset.note){day['n'+e.target.dataset.note]=e.target.value;save()}});
+document.querySelectorAll('nav button').forEach(b=>b.onclick=()=>{
+  document.querySelectorAll('nav button').forEach(x=>x.classList.toggle('on',x===b));
+  document.querySelectorAll('.tab').forEach(s=>s.classList.toggle('on',s.id==='tab-'+b.dataset.tab));
+  scrollTo(0,0);update();
+});
+
+renderPhoto();renderMeal();update();
+</script>
+</body>
+</html>
